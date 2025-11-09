@@ -1,0 +1,53 @@
+{
+  "name": "megawe-nextjs",
+  "main": ".next/server/app.js",
+  "compatibility_date": "2025-03-25",
+  "compatibility_flags": ["nodejs_compat"],
+  "assets": {
+    "directory": ".next",
+    "binding": "ASSETS"
+  },
+  "observability": {
+    "traces": {
+      "enabled": true,
+      "head_sampling_rate": 0.1
+    },
+    "logs": {
+      "enabled": true,
+      "head_sampling_rate": 0.5
+    }
+  },
+  "placement": {
+    "mode": "smart"
+  },
+  "kv_namespaces": [
+    {
+      "binding": "CACHE_KV",
+      "id": "cache_kv_namespace_id"
+    }
+  ],
+  "d1_databases": [
+    {
+      "binding": "DB",
+      "database_name": "megawe-db",
+      "database_id": "megawe_database_id"
+    }
+  ],
+  "r2_buckets": [
+    {
+      "binding": "IMAGES",
+      "bucket_name": "megawe-images"
+    }
+  ],
+  "vars": {
+    "NODE_ENV": "production",
+    "NEXT_PUBLIC_APP_NAME": "Megawe",
+    "NEXT_PUBLIC_APP_URL": "https://megawe-nextjs.workers.dev"
+  },
+  "routes": [
+    {
+      "pattern": "megawe-nextjs.mxwllalpha.workers.dev/*",
+      "zone_name": "mxwllalpha.workers.dev"
+    }
+  ]
+}
