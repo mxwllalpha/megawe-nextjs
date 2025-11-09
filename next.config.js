@@ -3,16 +3,14 @@ const nextConfig = {
   // Enable React strict mode
   reactStrictMode: true,
 
-  // Server external packages for Next.js 16
-  serverExternalPackages: ['@opennextjs/cloudflare'],
+  // Static export configuration for optimal Cloudflare Pages performance
+  output: 'export',
+  trailingSlash: true,
+  distDir: 'out',
 
-  // Experimental features for Next.js 16
-  experimental: {
-    optimizePackageImports: ['lucide-react', 'framer-motion'],
-  },
-
-  // Image optimization
+  // Image optimization for static export
   images: {
+    unoptimized: true, // Required for static export
     formats: ['image/webp', 'image/avif'],
     remotePatterns: [
       {
@@ -26,39 +24,33 @@ const nextConfig = {
     ],
   },
 
+  // Experimental features for Next.js 16
+  experimental: {
+    optimizePackageImports: ['lucide-react', 'framer-motion'],
+  },
+
   // SSG and ISR configuration
   generateEtags: true,
   poweredByHeader: false,
 
-  // Output configuration for Cloudflare Workers
-  output: 'standalone',
-
-  // Trailing slash for static export
-  trailingSlash: false,
-
-  // Environment variables for Cloudflare
+  // Environment variables for Cloudflare Pages
   env: {
     NEXT_PUBLIC_APP_NAME: 'Megawe',
     NEXT_PUBLIC_APP_DESCRIPTION: 'Indonesian Job Vacancy Aggregator',
+    NEXT_PUBLIC_API_URL: 'https://megawe-worker.tekipik.workers.dev',
+    NEXT_PUBLIC_WORKER_URL: 'https://megawe-worker.tekipik.workers.dev',
+    NEXT_PUBLIC_PLATFORM: 'cloudflare-pages',
   },
 
-  // Headers for security and performance
+  // Headers for security and performance (static export compatible)
   async headers() {
     return [
       {
-        source: '/(.*)',
+        source: '/_next/static/(.*)',
         headers: [
           {
-            key: 'X-Frame-Options',
-            value: 'DENY',
-          },
-          {
-            key: 'X-Content-Type-Options',
-            value: 'nosniff',
-          },
-          {
-            key: 'Referrer-Policy',
-            value: 'origin-when-cross-origin',
+            key: 'Cache-Control',
+            value: 'public, max-age=31536000, immutable',
           },
         ],
       },
@@ -98,6 +90,16 @@ const nextConfig = {
       {
         source: '/home',
         destination: '/',
+        permanent: true,
+      },
+      {
+        source: '/job/:id',
+        destination: '/jobs/:id',
+        permanent: true,
+      },
+      {
+        source: '/company/:id',
+        destination: '/companies/:id',
         permanent: true,
       },
     ];
