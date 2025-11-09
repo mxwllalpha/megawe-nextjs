@@ -42,68 +42,8 @@ const nextConfig = {
     NEXT_PUBLIC_PLATFORM: 'cloudflare-pages',
   },
 
-  // Headers for security and performance (static export compatible)
-  async headers() {
-    return [
-      {
-        source: '/_next/static/(.*)',
-        headers: [
-          {
-            key: 'Cache-Control',
-            value: 'public, max-age=31536000, immutable',
-          },
-        ],
-      },
-      {
-        source: '/robots.txt',
-        headers: [
-          {
-            key: 'Cache-Control',
-            value: 'public, max-age=86400, s-maxage=86400',
-          },
-        ],
-      },
-      {
-        source: '/sitemap.xml',
-        headers: [
-          {
-            key: 'Cache-Control',
-            value: 'public, max-age=3600, s-maxage=3600',
-          },
-        ],
-      },
-      {
-        source: '/rss.xml',
-        headers: [
-          {
-            key: 'Cache-Control',
-            value: 'public, max-age=1800, s-maxage=1800',
-          },
-        ],
-      },
-    ];
-  },
-
-  // Redirects for SEO
-  async redirects() {
-    return [
-      {
-        source: '/home',
-        destination: '/',
-        permanent: true,
-      },
-      {
-        source: '/job/:id',
-        destination: '/jobs/:id',
-        permanent: true,
-      },
-      {
-        source: '/company/:id',
-        destination: '/companies/:id',
-        permanent: true,
-      },
-    ];
-  },
+  // Note: redirects and headers are not supported with static export
+  // These will be handled at the Cloudflare Pages level if needed
 };
 
 module.exports = nextConfig;
