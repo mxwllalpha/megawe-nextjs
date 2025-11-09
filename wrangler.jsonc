@@ -49,8 +49,5 @@
     }
   ],
 
-  // Analytics configuration
-  "analytics": {
-    "enabled": true
-  }
+  // Note: Analytics can be configured in Cloudflare Pages dashboard
 }
