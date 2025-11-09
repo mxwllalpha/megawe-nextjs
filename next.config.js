@@ -23,10 +23,10 @@ const nextConfig = {
   poweredByHeader: false,
 
   // Output configuration for Cloudflare Workers
-  output: 'export',
+  output: 'standalone',
 
   // Trailing slash for static export
-  trailingSlash: true,
+  trailingSlash: false,
 
   // Environment variables for Cloudflare
   env: {

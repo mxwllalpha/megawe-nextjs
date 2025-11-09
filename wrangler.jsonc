@@ -22,27 +22,23 @@
   },
   "kv_namespaces": [
     {
-      "binding": "CACHE_KV",
-      "id": "cache_kv_namespace_id"
+      "binding": "MEGAWE_CACHE",
+      "id": "75dc9c6ac1b64949aaeee675590e32f5"
     }
   ],
   "d1_databases": [
     {
       "binding": "DB",
       "database_name": "megawe-db",
-      "database_id": "megawe_database_id"
-    }
-  ],
-  "r2_buckets": [
-    {
-      "binding": "IMAGES",
-      "bucket_name": "megawe-images"
+      "database_id": "2ab2aed8-4a5b-41be-b8e3-e3185d2ea652"
     }
   ],
   "vars": {
     "NODE_ENV": "production",
     "NEXT_PUBLIC_APP_NAME": "Megawe",
-    "NEXT_PUBLIC_APP_URL": "https://megawe-nextjs.workers.dev"
+    "NEXT_PUBLIC_APP_URL": "https://megawe-nextjs.mxwllalpha.workers.dev",
+    "NEXT_PUBLIC_API_URL": "https://megawe-worker.mxwllalpha.workers.dev",
+    "NEXT_PUBLIC_WORKER_URL": "https://megawe-worker.mxwllalpha.workers.dev"
   },
   "routes": [
     {

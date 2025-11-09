@@ -1,6 +1,7 @@
 import type { Metadata } from 'next'
 import { Inter } from 'next/font/google'
 import './globals.css'
+import { QueryProvider } from '@/components/providers/QueryProvider'
 import { SchemaMarkup } from '@/components/layout/SchemaMarkup'
 import { Analytics } from '@/components/layout/Analytics'
 
@@ -101,11 +102,13 @@ export default function RootLayout({
         <meta name="theme-color" content="#3b82f6" />
       </head>
       <body className="min-h-screen bg-gray-50 text-gray-900 antialiased">
-        <div id="root">
-          {children}
-        </div>
-        <SchemaMarkup />
-        <Analytics />
+        <QueryProvider>
+          <div id="root">
+            {children}
+          </div>
+          <SchemaMarkup />
+          <Analytics />
+        </QueryProvider>
       </body>
     </html>
   )
