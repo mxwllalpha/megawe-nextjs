@@ -1,6 +1,6 @@
 'use client'
 
-import { QueryClient, QueryClientProvider } from '@tanstack/react-query'
+import { QueryClient, QueryClientProvider, useQueryClient as useReactQueryClient } from '@tanstack/react-query'
 import { ReactQueryDevtools } from '@tanstack/react-query-devtools'
 import { useState } from 'react'
 
@@ -115,7 +115,7 @@ export function ServerQueryProvider({ children }: QueryProviderProps) {
  * Hook to get the Query Client instance
  */
 export function useQueryClient() {
-  return QueryClientProvider.useQueryClient()
+  return useReactQueryClient()
 }
 
 export default QueryProvider

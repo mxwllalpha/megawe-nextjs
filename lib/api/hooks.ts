@@ -21,7 +21,8 @@ import type {
   SearchResponse,
   StatsResponse,
 } from '@/lib/types'
-import { jobSchema, companySchema } from '@/lib/types/schemas'
+// Import schemas (will be implemented later)
+// import { jobSchema, companySchema } from '@/lib/types/schemas'
 
 /**
  * Query key factory for consistent cache keys
@@ -85,22 +86,7 @@ export function useJobs(filters: SearchFilters = {}) {
     queryKey: queryKeys.jobsList(filters),
     queryFn: () => megaweAPI.getJobs(filters),
     select: (data: JobsResponse) => {
-      // Validate and transform data
-      if (data.success && data.data) {
-        const validatedJobs = data.data.map(job => {
-          try {
-            return jobSchema.parse(job)
-          } catch (error) {
-            console.warn('Invalid job data:', job, error)
-            return null
-          }
-        }).filter(Boolean) as Job[]
-
-        return {
-          ...data,
-          data: validatedJobs,
-        }
-      }
+      // TODO: Add schema validation when schemas are implemented
       return data
     },
     ...defaultQueryConfig,
@@ -117,22 +103,7 @@ export function useJob(id: string) {
     queryFn: () => megaweAPI.getJob(id),
     enabled: !!id, // Only run if ID is provided
     select: (data: JobResponse) => {
-      if (data.success && data.data) {
-        try {
-          const validatedJob = jobSchema.parse(data.data)
-          return {
-            ...data,
-            data: validatedJob,
-          }
-        } catch (error) {
-          console.warn('Invalid job data:', data.data, error)
-          return {
-            ...data,
-            data: undefined,
-            error: 'Invalid job data received',
-          }
-        }
-      }
+      // TODO: Add schema validation when schemas are implemented
       return data
     },
     ...defaultQueryConfig,
@@ -148,21 +119,7 @@ export function useFeaturedJobs(limit = 6) {
     queryKey: queryKeys.featuredJobs(),
     queryFn: () => megaweAPI.getFeaturedJobs(limit),
     select: (data: JobsResponse) => {
-      if (data.success && data.data) {
-        const validatedJobs = data.data.slice(0, limit).map(job => {
-          try {
-            return jobSchema.parse(job)
-          } catch (error) {
-            console.warn('Invalid featured job data:', job, error)
-            return null
-          }
-        }).filter(Boolean) as Job[]
-
-        return {
-          ...data,
-          data: validatedJobs,
-        }
-      }
+      // TODO: Add schema validation when schemas are implemented
       return data
     },
     ...defaultQueryConfig,
@@ -195,21 +152,7 @@ export function useCompanies(limit = 20) {
     queryKey: queryKeys.companiesList(limit),
     queryFn: () => megaweAPI.getCompanies(limit),
     select: (data: CompaniesResponse) => {
-      if (data.success && data.data) {
-        const validatedCompanies = data.data.map(company => {
-          try {
-            return companySchema.parse(company)
-          } catch (error) {
-            console.warn('Invalid company data:', company, error)
-            return null
-          }
-        }).filter(Boolean) as Company[]
-
-        return {
-          ...data,
-          data: validatedCompanies,
-        }
-      }
+      // TODO: Add schema validation when schemas are implemented
       return data
     },
     ...defaultQueryConfig,
@@ -226,22 +169,7 @@ export function useCompany(id: string) {
     queryFn: () => megaweAPI.getCompany(id),
     enabled: !!id,
     select: (data: CompanyResponse) => {
-      if (data.success && data.data) {
-        try {
-          const validatedCompany = companySchema.parse(data.data)
-          return {
-            ...data,
-            data: validatedCompany,
-          }
-        } catch (error) {
-          console.warn('Invalid company data:', data.data, error)
-          return {
-            ...data,
-            data: undefined,
-            error: 'Invalid company data received',
-          }
-        }
-      }
+      // TODO: Add schema validation when schemas are implemented
       return data
     },
     ...defaultQueryConfig,

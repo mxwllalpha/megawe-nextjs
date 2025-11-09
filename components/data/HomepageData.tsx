@@ -101,7 +101,12 @@ export function HomepageData() {
 
   // Handle empty data state
   const jobs = featuredJobsData?.success ? featuredJobsData.data || [] : []
-  const stats = statsData?.success ? statsData.data : {
+  const stats = statsData?.success ? (statsData.data || {
+    totalJobs: 0,
+    totalCompanies: 0,
+    newJobsToday: 0,
+    activeLocations: 0,
+  }) : {
     totalJobs: 0,
     totalCompanies: 0,
     newJobsToday: 0,

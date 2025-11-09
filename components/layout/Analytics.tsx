@@ -43,11 +43,15 @@ export function Analytics({ googleAnalyticsId, cloudflareAnalytics = true }: Ana
 
       // Cleanup GA4 scripts on unmount
       return () => {
-        const scripts = document.querySelectorAll(\`script[src*="googletagmanager.com"]\`)
+        const scripts = document.querySelectorAll(`script[src*="googletagmanager.com"]`)
         scripts.forEach(script => script.remove())
       }
     }
 
+    return undefined
+  }, [googleAnalyticsId])
+
+  useEffect(() => {
     // Cloudflare Analytics
     if (cloudflareAnalytics) {
       // Cloudflare Analytics is automatically collected
@@ -57,8 +61,8 @@ export function Analytics({ googleAnalyticsId, cloudflareAnalytics = true }: Ana
 
     // Custom job search analytics
     const trackJobSearch = (searchData: any) => {
-      if (typeof gtag !== 'undefined') {
-        gtag('event', 'job_search', {
+      if (typeof window !== 'undefined' && typeof (window as any).gtag !== 'undefined') {
+        (window as any).gtag('event', 'job_search', {
           search_term: searchData.query,
           location_filter: searchData.location,
           job_type: searchData.employmentType,
@@ -68,8 +72,8 @@ export function Analytics({ googleAnalyticsId, cloudflareAnalytics = true }: Ana
     }
 
     const trackJobView = (jobData: any) => {
-      if (typeof gtag !== 'undefined') {
-        gtag('event', 'job_view', {
+      if (typeof window !== 'undefined' && typeof (window as any).gtag !== 'undefined') {
+        (window as any).gtag('event', 'job_view', {
           job_id: jobData.id,
           job_title: jobData.title,
           company_name: jobData.company.name,
@@ -80,8 +84,8 @@ export function Analytics({ googleAnalyticsId, cloudflareAnalytics = true }: Ana
     }
 
     const trackJobApplication = (jobData: any) => {
-      if (typeof gtag !== 'undefined') {
-        gtag('event', 'job_application', {
+      if (typeof window !== 'undefined' && typeof (window as any).gtag !== 'undefined') {
+        (window as any).gtag('event', 'job_application', {
           job_id: jobData.id,
           job_title: jobData.title,
           company_name: jobData.company.name,
@@ -97,8 +101,8 @@ export function Analytics({ googleAnalyticsId, cloudflareAnalytics = true }: Ana
     ;(window as any).trackJobApplication = trackJobApplication
 
     // Track page view
-    if (typeof gtag !== 'undefined') {
-      gtag('event', 'page_view', {
+    if (typeof window !== 'undefined' && typeof (window as any).gtag !== 'undefined') {
+      (window as any).gtag('event', 'page_view', {
         page_title: document.title,
         page_location: window.location.href,
       })
@@ -113,8 +117,8 @@ export function Analytics({ googleAnalyticsId, cloudflareAnalytics = true }: Ana
  */
 export function useAnalytics() {
   const trackEvent = (eventName: string, parameters?: Record<string, any>) => {
-    if (typeof gtag !== 'undefined') {
-      gtag('event', eventName, parameters)
+    if (typeof window !== 'undefined' && typeof (window as any).gtag !== 'undefined') {
+      (window as any).gtag('event', eventName, parameters)
     }
   }
 
