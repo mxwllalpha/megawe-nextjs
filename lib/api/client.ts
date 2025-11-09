@@ -23,8 +23,8 @@ import type {
 /**
  * API Client Configuration
  */
-const API_BASE_URL = process.env.NEXT_PUBLIC_API_URL || 'https://megawe-worker.mxwllalpha.workers.dev'
-const WORKER_URL = process.env.NEXT_PUBLIC_WORKER_URL || 'https://megawe-worker.mxwllalpha.workers.dev'
+const API_BASE_URL = process.env.NEXT_PUBLIC_API_URL || 'https://megawe-worker.tekipik.workers.dev'
+const WORKER_URL = process.env.NEXT_PUBLIC_WORKER_URL || 'https://megawe-worker.tekipik.workers.dev'
 
 /**
  * Request configuration

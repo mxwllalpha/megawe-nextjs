@@ -47,6 +47,8 @@ Thumbs.db
 # Cloudflare
 .wrangler/
 .wrangler.toml.bak
+dev-dist/
+dist/
 
 # MCP
 .claude/

@@ -1,0 +1,58 @@
+# Cloudflare Pages Configuration for Megawe Next.js
+
+name = "megawe-nextjs"
+compatibility_date = "2025-03-25"
+compatibility_flags = ["nodejs_compat"]
+
+# Pages configuration
+pages_build_output_dir = ".vercel/output/static"
+
+# Environment variables
+[env.production]
+[env.production.vars]
+NEXT_PUBLIC_APP_NAME = "Megawe"
+NEXT_PUBLIC_APP_DESCRIPTION = "Indonesian Job Vacancy Aggregator"
+NEXT_PUBLIC_API_URL = "https://megawe-worker.tekipik.workers.dev"
+NEXT_PUBLIC_WORKER_URL = "https://megawe-worker.tekipik.workers.dev"
+NEXT_PUBLIC_PLATFORM = "cloudflare-pages"
+NODE_ENV = "production"
+
+[env.preview]
+[env.preview.vars]
+NEXT_PUBLIC_APP_NAME = "Megawe"
+NEXT_PUBLIC_APP_DESCRIPTION = "Indonesian Job Vacancy Aggregator"
+NEXT_PUBLIC_API_URL = "https://megawe-worker.tekipik.workers.dev"
+NEXT_PUBLIC_WORKER_URL = "https://megawe-worker.tekipik.workers.dev"
+NEXT_PUBLIC_PLATFORM = "cloudflare-pages"
+NODE_ENV = "development"
+
+# KV namespace bindings (shared with megawe-worker)
+[[kv_namespaces]]
+binding = "MEGAWE_CACHE"
+id = "75dc9c6ac1b64949aaeee675590e32f5"
+preview_id = "75dc9c6ac1b64949aaeee675590e32f5"
+
+# D1 database bindings (shared with megawe-worker)
+[[d1_databases]]
+binding = "MEGAWE_DB"
+database_name = "megawe-db"
+database_id = "2ab2aed8-4a5b-41be-b8e3-e3185d2ea652"
+
+# Analytics configuration
+[analytics]
+enabled = true
+
+# Build configuration
+[build]
+command = "npm run build"
+cwd = "."
+watch_dir = "src"
+
+# Assets configuration
+[assets]
+directory = "public"
+binding = "ASSETS"
+
+# Compatibility settings
+[compatibility]
+node_js_compatibility = true

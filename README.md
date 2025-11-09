@@ -93,6 +93,27 @@ npm run preview
 ```
 
 ### Deployment
+
+#### **Cloudflare Pages (Recommended)**
+```bash
+# Build for production
+npm run build
+
+# Deploy to Cloudflare Pages (via GitHub)
+# 1. Push to GitHub
+git add .
+git commit -m "feat: Ready for Cloudflare Pages deployment"
+git push origin main
+
+# 2. Connect repository to Cloudflare Pages
+# Visit: https://dash.cloudflare.com/pages
+# Settings:
+# - Build command: npm run build
+# - Build output directory: .next
+# - Node.js version: 20.x
+```
+
+#### **Cloudflare Workers (Alternative)**
 ```bash
 npm run deploy
 ```
@@ -174,9 +195,21 @@ npm run deploy
 
 MIT License - see LICENSE file for details.
 
+## 🌐 Live Demo
+
+- **Production**: https://megawe-nextjs.pages.dev (Coming Soon)
+- **API Backend**: https://megawe-worker.tekipik.workers.dev
+- **GitHub Repository**: https://github.com/mxwllalpha/megawe-nextjs
+
+## 🔗 Related Projects
+
+- **[megawe-worker](https://github.com/mxwllalpha/megawe-worker)**: API Gateway & Data Processing
+- **[megawe-crawler](https://github.com/mxwllalpha/megawe-crawler)**: Job Data Crawler Service
+
 ---
 
 **Author**: Maxwell Alpha
 **GitHub**: https://github.com/mxwllalpha
 **Started**: 2025-11-09
-**Framework**: Next.js 16 + Cloudflare Workers
+**Framework**: Next.js 16 + Cloudflare Pages + Workers
+**Status**: 🚀 Production Ready

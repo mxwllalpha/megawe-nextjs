@@ -3,19 +3,27 @@ const nextConfig = {
   // Enable React strict mode
   reactStrictMode: true,
 
-  // Enable TypeScript strict mode
-  swcMinify: true,
+  // Server external packages for Next.js 16
+  serverExternalPackages: ['@opennextjs/cloudflare'],
 
   // Experimental features for Next.js 16
   experimental: {
     optimizePackageImports: ['lucide-react', 'framer-motion'],
-    serverComponentsExternalPackages: ['@opennextjs/cloudflare'],
   },
 
   // Image optimization
   images: {
     formats: ['image/webp', 'image/avif'],
-    domains: ['localhost'],
+    remotePatterns: [
+      {
+        protocol: 'https',
+        hostname: '**',
+      },
+      {
+        protocol: 'http',
+        hostname: 'localhost',
+      },
+    ],
   },
 
   // SSG and ISR configuration
