@@ -104,13 +104,49 @@ export function HomepageData() {
   const stats = statsData?.success ? (statsData.data || {
     totalJobs: 0,
     totalCompanies: 0,
+    totalCategories: 0,
+    totalLocations: 0,
+    jobsByCategory: [],
+    jobsByType: [],
+    jobsByLocation: [],
+    salaryRanges: [],
+    recentActivity: {
+      jobsAddedToday: 0,
+      jobsAddedThisWeek: 0,
+      jobsAddedThisMonth: 0,
+      lastSyncTime: new Date().toISOString(),
+    },
     newJobsToday: 0,
+    newJobsThisWeek: 0,
     activeLocations: 0,
+    featuredJobs: 0,
+    remoteJobs: 0,
+    popularLocations: [],
+    popularCompanies: [],
+    popularIndustries: [],
   }) : {
     totalJobs: 0,
     totalCompanies: 0,
+    totalCategories: 0,
+    totalLocations: 0,
+    jobsByCategory: [],
+    jobsByType: [],
+    jobsByLocation: [],
+    salaryRanges: [],
+    recentActivity: {
+      jobsAddedToday: 0,
+      jobsAddedThisWeek: 0,
+      jobsAddedThisMonth: 0,
+      lastSyncTime: new Date().toISOString(),
+    },
     newJobsToday: 0,
+    newJobsThisWeek: 0,
     activeLocations: 0,
+    featuredJobs: 0,
+    remoteJobs: 0,
+    popularLocations: [],
+    popularCompanies: [],
+    popularIndustries: [],
   }
 
   return (
@@ -119,7 +155,7 @@ export function HomepageData() {
       <FeaturedJobs jobs={jobs} />
 
       {/* Statistics */}
-      <StatsSection stats={stats} />
+      <StatsSection stats={stats as any} />
     </>
   )
 }

@@ -18,6 +18,9 @@ import type {
   Job,
   Company,
   JobStats,
+  EmploymentType,
+  ExperienceLevel,
+  SalaryPeriod,
 } from '@/lib/types'
 
 /**
@@ -35,6 +38,237 @@ interface RequestConfig {
   body?: any
   revalidate?: number // ISR cache duration in seconds
   tags?: string[] // Cache tags for invalidation
+}
+
+/**
+ * API Response Mapper
+ * Maps worker API responses to frontend TypeScript types
+ */
+class ApiResponseMapper {
+  /**
+   * Map worker API job response to frontend Job interface
+   */
+  static mapJob(workerJob: any): Job {
+    return {
+      id: workerJob.id,
+      title: workerJob.title,
+      slug: workerJob.seo?.slug || workerJob.title.toLowerCase().replace(/\s+/g, '-'),
+      description: workerJob.description || '',
+      requirements: workerJob.requirements || [],
+      responsibilities: workerJob.responsibilities || [],
+      benefits: workerJob.benefits || [],
+      skills: workerJob.skills || workerJob.tags || [],
+      tags: workerJob.tags || [],
+
+      // Company information
+      company: workerJob.company || '',
+      companyData: {
+        id: workerJob.employerId || '',
+        name: workerJob.company || '',
+        slug: workerJob.company?.toLowerCase().replace(/\s+/g, '-') || '',
+        description: workerJob.employerData?.description || '',
+        logo: undefined, // Not available in API yet
+        website: workerJob.employerData?.website || '',
+        industry: workerJob.category || '',
+        companySize: '1-10' as any, // Default value
+        foundedYear: undefined,
+        email: workerJob.employerData?.email || '',
+        phone: workerJob.employerData?.phone || '',
+        address: workerJob.location || '',
+        location: {
+          id: workerJob.regionId || '',
+          name: workerJob.location || '',
+          slug: workerJob.location?.toLowerCase().replace(/\s+/g, '-'),
+          type: 'city' as any,
+          coordinates: {
+            lat: workerJob.latitude || 0,
+            lng: workerJob.longitude || 0,
+          },
+          country: 'Indonesia',
+          countryCode: 'ID',
+          jobsCount: 0,
+          companiesCount: 0,
+          createdAt: new Date().toISOString(),
+          updatedAt: new Date().toISOString(),
+        },
+        benefits: [],
+        culture: '',
+        values: [],
+        metaTitle: '',
+        metaDescription: '',
+        activeJobsCount: 0,
+        totalJobsCount: 0,
+        verified: false,
+        featured: false,
+        createdAt: new Date().toISOString(),
+        updatedAt: new Date().toISOString(),
+      },
+
+      // Location information
+      location: workerJob.location || '',
+      locationData: undefined,
+      isRemote: workerJob.type === 'remote',
+      isHybrid: false,
+
+      // Enhanced location data from API
+      postalCode: workerJob.postalCode,
+      locationHierarchy: workerJob.locationHierarchy,
+      latitude: workerJob.latitude,
+      longitude: workerJob.longitude,
+
+      // Job details
+      employmentType: this.mapEmploymentType(workerJob.type || workerJob.employmentType),
+      experienceLevel: this.mapExperienceLevel(workerJob.minYearExperience),
+      salary: workerJob.salary ? {
+        min: workerJob.salary.min,
+        max: workerJob.salary.max,
+        currency: workerJob.salary.currency || 'IDR',
+        period: this.mapSalaryPeriod(workerJob.salary.type || workerJob.salary.period),
+        showSalary: workerJob.salary.showSalary || workerJob.showSalary,
+        type: workerJob.salary.type || workerJob.salary.period,
+      } : undefined,
+      type: workerJob.type,
+      category: workerJob.category,
+      department: workerJob.category,
+
+      // Quota information
+      quota: workerJob.quota,
+      availableQuota: workerJob.availableQuota,
+      usageQuota: workerJob.usageQuota,
+
+      // Enhanced metadata
+      employerId: workerJob.employerId,
+      employerData: workerJob.employerData,
+      source: workerJob.source || 'kemnaker',
+      sourceUrl: workerJob.sourceUrl,
+      applicationUrl: workerJob.applicationUrl,
+      applicationEmail: undefined,
+      applicationDeadline: workerJob.expiresAt,
+      expiresAt: workerJob.expiresAt,
+      isActive: workerJob.isActive !== false,
+
+      // SEO and structured data
+      metaTitle: workerJob.seo?.title,
+      metaDescription: workerJob.seo?.description,
+      seo: workerJob.seo,
+      jsonldSchema: workerJob.jsonldSchema,
+      keywords: workerJob.seo?.keywords || workerJob.tags || [],
+
+      // Timestamps
+      postedAt: workerJob.postedAt || new Date().toISOString(),
+      updatedAt: workerJob.updatedAt,
+      createdAt: workerJob.createdAt,
+
+      // Statistics
+      viewCount: 0,
+      applicationCount: 0,
+      featured: false,
+      priority: 0,
+
+      // Additional API fields
+      jobId: workerJob.jobId,
+      jobTypeId: workerJob.jobTypeId,
+      jobFunctionId: workerJob.jobFunctionId,
+      minEducationId: workerJob.minEducationId,
+      regionId: workerJob.regionId,
+      cityId: workerJob.cityId,
+      gender: workerJob.gender,
+      physicalCondition: workerJob.physicalCondition,
+      maritalStatus: workerJob.maritalStatus,
+      minYearExperience: workerJob.minYearExperience,
+      minAge: workerJob.minAge,
+      maxAge: workerJob.maxAge,
+      confidential: workerJob.confidential,
+      platformType: workerJob.platformType,
+      platformId: workerJob.platformId,
+      platformLink: workerJob.platformLink,
+      showSalary: workerJob.showSalary,
+    }
+  }
+
+  /**
+   * Map employment type from API to frontend enum
+   */
+  private static mapEmploymentType(type?: string): EmploymentType {
+    if (!type) return 'full-time'
+
+    const typeMap: Record<string, EmploymentType> = {
+      'full-time': 'full-time',
+      'part-time': 'part-time',
+      'contract': 'contract',
+      'temporary': 'temporary',
+      'internship': 'internship',
+      'freelance': 'freelance',
+      'volunteer': 'volunteer',
+    }
+    return typeMap[type.toLowerCase()] || 'full-time'
+  }
+
+  /**
+   * Map experience level from years to enum
+   */
+  private static mapExperienceLevel(years?: number): ExperienceLevel | undefined {
+    if (!years && years !== 0) return undefined
+    if (years < 1) return 'entry-level'
+    if (years < 3) return 'junior'
+    if (years < 5) return 'mid-level'
+    if (years < 8) return 'senior'
+    if (years < 12) return 'lead'
+    return 'manager'
+  }
+
+  /**
+   * Map salary period from API to frontend enum
+   */
+  private static mapSalaryPeriod(period?: string): SalaryPeriod {
+    if (!period) return 'month'
+
+    const periodMap: Record<string, SalaryPeriod> = {
+      'hour': 'hour',
+      'day': 'day',
+      'week': 'week',
+      'month': 'month',
+      'year': 'year',
+      'hourly': 'hour',
+      'daily': 'day',
+      'weekly': 'week',
+      'monthly': 'month',
+      'yearly': 'year',
+    }
+    return periodMap[period.toLowerCase()] || 'month'
+  }
+
+  /**
+   * Map API stats response to frontend JobStats interface
+   */
+  static mapJobStats(apiStats: any): JobStats {
+    return {
+      totalJobs: apiStats.totalJobs || 0,
+      totalCompanies: apiStats.totalCompanies || 0,
+      totalCategories: apiStats.totalCategories || 0,
+      totalLocations: apiStats.totalLocations || 0,
+      jobsByCategory: apiStats.jobsByCategory || [],
+      jobsByType: apiStats.jobsByType || [],
+      jobsByLocation: apiStats.jobsByLocation || [],
+      salaryRanges: apiStats.salaryRanges || [],
+      recentActivity: {
+        jobsAddedToday: apiStats.recentActivity?.jobsAddedToday || apiStats.newJobsToday || 0,
+        jobsAddedThisWeek: apiStats.recentActivity?.jobsAddedThisWeek || apiStats.newJobsThisWeek || 0,
+        jobsAddedThisMonth: apiStats.recentActivity?.jobsAddedThisMonth || 0,
+        lastSyncTime: apiStats.recentActivity?.lastSyncTime || new Date().toISOString(),
+      },
+
+      // Legacy compatibility
+      newJobsToday: apiStats.recentActivity?.jobsAddedToday || apiStats.newJobsToday || 0,
+      newJobsThisWeek: apiStats.recentActivity?.jobsAddedThisWeek || apiStats.newJobsThisWeek || 0,
+      activeLocations: apiStats.totalLocations || 0,
+      featuredJobs: 0,
+      remoteJobs: 0,
+      popularLocations: [],
+      popularCompanies: [],
+      popularIndustries: [],
+    }
+  }
 }
 
 /**
@@ -178,10 +412,17 @@ export class MegaweAPI {
    * Get featured jobs
    */
   async getFeaturedJobs(limit = 6): Promise<JobsResponse> {
-    return this.request(`/api/jobs?featured=true&limit=${limit}`, {
+    const response = await this.request(`/api/featured-jobs?limit=${limit}`, {
       revalidate: 1800, // 30 minutes for featured jobs
       tags: ['featured-jobs'],
     })
+
+    // Map the API response to frontend types
+    if (response.success && response.data) {
+      response.data = (response.data as any[]).map((job: any) => ApiResponseMapper.mapJob(job))
+    }
+
+    return response as JobsResponse
   }
 
   /**
@@ -252,10 +493,17 @@ export class MegaweAPI {
    * Get job statistics
    */
   async getJobStats(): Promise<StatsResponse> {
-    return this.request('/api/stats', {
+    const response = await this.request('/api/stats/summary', {
       revalidate: 3600, // 1 hour for stats
       tags: ['stats', 'job-stats'],
     })
+
+    // Map the API response to frontend types
+    if (response.success && response.data) {
+      response.data = ApiResponseMapper.mapJobStats(response.data)
+    }
+
+    return response as StatsResponse
   }
 
   /**

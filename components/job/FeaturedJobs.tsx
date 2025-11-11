@@ -1,42 +1,28 @@
 'use client'
 
 import { motion } from 'framer-motion'
-import { Briefcase, MapPin, Building, Clock, ArrowRight, Heart } from 'lucide-react'
+import { Briefcase, MapPin, Building, Clock, ArrowRight, Heart, Users, DollarSign } from 'lucide-react'
 import { useAnalytics } from '@/components/layout/Analytics'
+import type { Job } from '@/lib/types'
 
 /**
  * FeaturedJobs Component
  *
- * Displays featured job listings on the homepage.
+ * Displays featured job listings on the homepage with enhanced data from API.
  */
 
-interface Job {
-  id: string
-  title: string
-  company: {
-    name: string
-    logo?: string
-    location: string
-  }
-  location: string
-  employmentType: string
-  postedAt: string
-  isRemote: boolean
-  description: string
-}
-
 interface FeaturedJobsProps {
-  jobs: any[] // Use any for now to avoid type conflicts
+  jobs: Job[]
 }
 
 export function FeaturedJobs({ jobs }: FeaturedJobsProps) {
   const { trackJobView } = useAnalytics()
 
-  const handleJobClick = (job: any) => {
+  const handleJobClick = (job: Job) => {
     trackJobView({
       id: job.id,
       title: job.title,
-      company: { name: job.company.name },
+      company: { name: job.company },
       location: { name: job.location },
       employmentType: job.employmentType,
     })
@@ -81,19 +67,22 @@ export function FeaturedJobs({ jobs }: FeaturedJobsProps) {
                 <div className="flex items-start justify-between">
                   <div className="flex items-center gap-3">
                     <div className="w-12 h-12 bg-gray-100 rounded-lg flex items-center justify-center">
-                      {job.company.logo ? (
+                      {job.companyData?.logo ? (
                         <img
-                          src={job.company.logo}
-                          alt={job.company.name}
+                          src={job.companyData.logo}
+                          alt={job.companyData.name}
                           className="w-8 h-8 object-contain"
                         />
                       ) : (
                         <Building className="w-6 h-6 text-gray-400" />
                       )}
                     </div>
-                    <div>
+                    <div className="flex-1">
                       <h3 className="job-title line-clamp-1">{job.title}</h3>
-                      <p className="text-sm font-medium text-gray-700">{job.company.name}</p>
+                      <p className="text-sm font-medium text-gray-700">{job.company}</p>
+                      {job.companyData?.industry && (
+                        <p className="text-xs text-gray-500">{job.companyData.industry}</p>
+                      )}
                     </div>
                   </div>
                   <button
@@ -113,6 +102,11 @@ export function FeaturedJobs({ jobs }: FeaturedJobsProps) {
                     {job.isRemote && (
                       <span className="job-badge">Remote</span>
                     )}
+                    {job.postalCode && (
+                      <span className="text-xs text-gray-500 bg-gray-100 px-2 py-1 rounded">
+                        {job.postalCode}
+                      </span>
+                    )}
                   </div>
                   <div className="flex items-center gap-2">
                     <Briefcase className="w-4 h-4" />
@@ -122,6 +116,22 @@ export function FeaturedJobs({ jobs }: FeaturedJobsProps) {
                     <Clock className="w-4 h-4" />
                     <span className="text-sm">{formatPostedDate(job.postedAt)}</span>
                   </div>
+                  {job.quota && (
+                    <div className="flex items-center gap-2">
+                      <Users className="w-4 h-4" />
+                      <span className="text-sm">
+                        Available: {job.availableQuota || job.quota}/{job.quota}
+                      </span>
+                    </div>
+                  )}
+                  {job.salary && job.salary.showSalary && (
+                    <div className="flex items-center gap-2">
+                      <DollarSign className="w-4 h-4" />
+                      <span className="text-sm font-medium text-green-600">
+                        {formatSalary(job.salary)}
+                      </span>
+                    </div>
+                  )}
                 </div>
 
                 <p className="text-sm text-gray-600 line-clamp-3 mb-4">
@@ -168,4 +178,26 @@ function formatPostedDate(postedAt: string): string {
   if (diffDays <= 7) return `${diffDays} days ago`
   if (diffDays <= 30) return `${Math.ceil(diffDays / 7)} weeks ago`
   return date.toLocaleDateString('en-US', { month: 'short', day: 'numeric' })
+}
+
+function formatSalary(salary: any): string {
+  if (!salary) return 'Salary not specified'
+
+  const { min, max, currency, period } = salary
+  const formatter = new Intl.NumberFormat('id-ID', {
+    style: 'currency',
+    currency: currency || 'IDR',
+    minimumFractionDigits: 0,
+    maximumFractionDigits: 0,
+  })
+
+  if (min && max) {
+    return `${formatter.format(min)} - ${formatter.format(max)}/${period}`
+  } else if (min) {
+    return `${formatter.format(min)}/${period}`
+  } else if (max) {
+    return `Up to ${formatter.format(max)}/${period}`
+  }
+
+  return 'Competitive'
 }

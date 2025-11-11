@@ -29,54 +29,107 @@ export interface PaginationMeta {
 }
 
 /**
- * Job vacancy data structure
+ * Location hierarchy structure from enhanced API
+ */
+export interface LocationHierarchy {
+  provinsi: string
+  kabupaten: string
+  kecamatan: string
+  desa: string
+  kodepos: string
+}
+
+/**
+ * Enhanced Job vacancy data structure with API integration
  */
 export interface Job {
   id: string
   title: string
-  slug: string
+  slug?: string
   description: string
   requirements: string[]
-  responsibilities: string[]
-  benefits: string[]
+  responsibilities?: string[]
+  benefits?: string[]
   skills: string[]
+  tags: string[]
 
-  // Company information
-  companyId: string
-  company: Company
+  // Company information (simplified from API)
+  company: string // Company name from API
+  companyId?: string
+  companyData?: Company
 
-  // Location information
-  location: Location
+  // Location information (enhanced from API)
+  location: string // Location name from API
+  locationData?: Location
   isRemote: boolean
   isHybrid: boolean
 
+  // Enhanced location data from crawler
+  postalCode?: string
+  locationHierarchy?: LocationHierarchy
+  latitude?: number
+  longitude?: number
+
   // Job details
   employmentType: EmploymentType
-  experienceLevel: ExperienceLevel
+  experienceLevel?: ExperienceLevel
   salary?: SalaryInfo
+  type?: string // API field for employment type
+  category?: string // Job category from API
   department?: string
 
-  // Application information
+  // Quota information from API
+  quota?: number
+  availableQuota?: number
+  usageQuota?: number
+
+  // Enhanced metadata from API
+  employerId?: string
+  employerData?: any // Employer object from API
+  source?: 'kemnaker' | string
+  sourceUrl?: string
   applicationUrl?: string
   applicationEmail?: string
   applicationDeadline?: string
+  expiresAt?: string
   isActive: boolean
 
-  // SEO and metadata
+  // SEO and structured data
   metaTitle?: string
   metaDescription?: string
+  seo?: any // SEO data from API
+  jsonldSchema?: Record<string, any> // JSON-LD schema from API
   keywords: string[]
 
   // Timestamps
   postedAt: string
-  updatedAt: string
-  expiresAt?: string
+  updatedAt?: string
+  createdAt?: string
 
   // Statistics
-  viewCount: number
-  applicationCount: number
-  featured: boolean
-  priority: number
+  viewCount?: number
+  applicationCount?: number
+  featured?: boolean
+  priority?: number
+
+  // Additional API fields
+  jobId?: string // Original job ID from source
+  jobTypeId?: string
+  jobFunctionId?: string
+  minEducationId?: string
+  regionId?: string
+  cityId?: string
+  gender?: string
+  physicalCondition?: string
+  maritalStatus?: string
+  minYearExperience?: number
+  minAge?: number
+  maxAge?: number
+  confidential?: boolean
+  platformType?: string
+  platformId?: string
+  platformLink?: string
+  showSalary?: boolean
 }
 
 /**
@@ -162,36 +215,49 @@ export interface Location {
 }
 
 /**
- * Salary information
+ * Salary information (enhanced to match API response)
  */
 export interface SalaryInfo {
   min?: number
   max?: number
   currency: string
   period: SalaryPeriod
-  isNegotiable: boolean
-  isVisible: boolean
+  isNegotiable?: boolean
+  isVisible?: boolean
+  showSalary?: boolean // API field for salary visibility
+  type?: string // API field: monthly, yearly, hourly
 }
 
 /**
- * Search filters
+ * Search filters (enhanced with new API fields)
  */
 export interface SearchFilters {
   query?: string
   location?: string
   locationId?: string
+  postalCode?: string // New field for postal code filtering
   companyId?: string
+  company?: string // Company name filtering
   industry?: string
+  category?: string // Job category filtering
   employmentType?: EmploymentType[]
   experienceLevel?: ExperienceLevel[]
   salaryMin?: number
   salaryMax?: number
+  showSalary?: boolean // Filter by salary visibility
   isRemote?: boolean
   isFeatured?: boolean
   postedWithin?: PostedWithin
   sortBy?: SortBy
   page?: number
   limit?: number
+
+  // Enhanced filters from API
+  hasQuota?: boolean // Filter jobs with available quota
+  minAge?: number
+  maxAge?: number
+  gender?: string
+  education?: string // Minimum education level
 }
 
 /**
@@ -233,26 +299,56 @@ export interface SearchFacets {
 }
 
 /**
- * Job statistics
+ * Job statistics (enhanced to match API response)
  */
 export interface JobStats {
   totalJobs: number
   totalCompanies: number
+  totalCategories: number
   totalLocations: number
-  newJobsToday: number
-  newJobsThisWeek: number
-  activeLocations: number
-  featuredJobs: number
-  remoteJobs: number
-  popularLocations: Array<{
+  jobsByCategory: Array<{
+    category: string
+    count: number
+    percentage: number
+  }>
+  jobsByType: Array<{
+    type: string
+    count: number
+    percentage: number
+  }>
+  jobsByLocation: Array<{
+    location: string
+    count: number
+    percentage: number
+  }>
+  salaryRanges: Array<{
+    min: number
+    max: number
+    currency: string
+    count: number
+  }>
+  recentActivity: {
+    jobsAddedToday: number
+    jobsAddedThisWeek: number
+    jobsAddedThisMonth: number
+    lastSyncTime: string
+  }
+
+  // Legacy fields for compatibility
+  newJobsToday?: number
+  newJobsThisWeek?: number
+  activeLocations?: number
+  featuredJobs?: number
+  remoteJobs?: number
+  popularLocations?: Array<{
     location: Location
     count: number
   }>
-  popularCompanies: Array<{
+  popularCompanies?: Array<{
     company: Company
     count: number
   }>
-  popularIndustries: Array<{
+  popularIndustries?: Array<{
     industry: string
     count: number
   }>
