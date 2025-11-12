@@ -35,9 +35,14 @@ export function HeroSection() {
   }
 
   return (
-    <section className="relative bg-gradient-to-br from-blue-50 via-white to-purple-50 py-20 lg:py-32">
+    <section className="relative bg-gradient-to-br from-blue-600 via-blue-700 to-indigo-800 py-20 lg:py-32">
       {/* Background Pattern */}
-      <div className="absolute inset-0 bg-[url('/images/hero-pattern.svg')] opacity-5" />
+      <div className="absolute inset-0 bg-[url('/images/hero-pattern.svg')] opacity-10" />
+
+      {/* Floating Elements */}
+      <div className="absolute top-20 left-10 w-20 h-20 bg-white/10 rounded-full blur-xl animate-pulse" />
+      <div className="absolute bottom-20 right-10 w-32 h-32 bg-blue-400/10 rounded-full blur-2xl animate-pulse delay-1000" />
+      <div className="absolute top-1/2 left-1/4 w-16 h-16 bg-indigo-400/10 rounded-full blur-xl animate-pulse delay-500" />
 
       <div className="container-custom relative">
         <div className="text-center max-w-4xl mx-auto">
@@ -47,13 +52,13 @@ export function HeroSection() {
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.5 }}
           >
-            <h1 className="text-4xl lg:text-6xl xl:text-7xl font-bold text-gray-900 mb-6">
-              <span className="gradient-text">Temukan Pekerjaan</span>
+            <h1 className="text-4xl lg:text-6xl xl:text-7xl font-bold text-white mb-6">
+              Temukan Pekerjaan
               <br />
-              <span className="text-gray-800">Impian Anda di Indonesia</span>
+              <span className="text-blue-100">Impian Anda di Indonesia</span>
             </h1>
 
-            <p className="text-xl lg:text-2xl text-gray-600 mb-8 lg:mb-12 max-w-3xl mx-auto leading-relaxed">
+            <p className="text-xl lg:text-2xl text-blue-100 mb-8 lg:mb-12 max-w-3xl mx-auto leading-relaxed">
               Jelajahi ribuan lowongan kerja dari perusahaan terpercaya.
               Dari startup hingga multinational, semua ada di Megawe.
             </p>

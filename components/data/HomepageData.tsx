@@ -155,7 +155,7 @@ export function HomepageData() {
       <FeaturedJobs jobs={jobs} />
 
       {/* Statistics */}
-      <StatsSection stats={stats as any} />
+      <StatsSection />
     </>
   )
 }

@@ -189,6 +189,20 @@ export function useAnalytics() {
     })
   }
 
+  const trackJobApply = (jobData: {
+    jobId: string
+    title: string
+    company: string
+    applicationType: 'quick_apply' | 'full_apply'
+  }) => {
+    trackEvent('job_apply', {
+      job_id: jobData.jobId,
+      job_title: jobData.title,
+      company_name: jobData.company,
+      application_type: jobData.applicationType,
+    })
+  }
+
   const trackSearchSuggestionClick = (suggestion: string, originalQuery: string) => {
     trackEvent('search_suggestion_click', {
       suggestion,
@@ -200,6 +214,7 @@ export function useAnalytics() {
     trackEvent,
     trackJobSearch,
     trackJobView,
+    trackJobApply,
     trackJobApplication,
     trackCompanyView,
     trackFilterUsage,
