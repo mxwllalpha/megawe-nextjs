@@ -5,7 +5,7 @@
  * Returns featured job listings for homepage display
  */
 
-import { Env, Job, ApiResponse } from '../../types'
+import { Env, ApiResponse } from '../../types'
 
 export async function onRequestGet(context: { env: Env; request: Request }) {
   const { env, request } = context
@@ -15,7 +15,6 @@ export async function onRequestGet(context: { env: Env; request: Request }) {
     // Parse query parameters
     const url = new URL(request.url)
     const limit = parseInt(url.searchParams.get('limit') || '6')
-    const offset = parseInt(url.searchParams.get('offset') || '0')
 
     // Validate limit
     if (limit > 50) {
@@ -33,126 +32,97 @@ export async function onRequestGet(context: { env: Env; request: Request }) {
       })
     }
 
-    // Query featured jobs from database (using only available columns)
+    // Simple query using only essential columns
     const query = `
       SELECT
         id,
         title,
-        seo as slug,
         description,
-        requirements,
-        skills,
-        tags,
         company,
-        employer_id,
         location,
-        postal_code,
-        latitude,
-        longitude,
-        type as employment_type,
-        salary_min,
-        salary_max,
-        salary_currency,
-        salary_type as salary_period,
-        show_salary,
         type,
         category,
+        salary_min,
+        salary_max,
+        show_salary,
         quota,
-        usage_quota,
         available_quota,
-        gender,
-        physical_condition,
-        marital_status,
-        min_year_experience,
-        min_age,
-        max_age,
-        region_id,
-        city_id,
         posted_at,
-        expires_at,
-        is_active,
-        application_url,
-        created_at,
-        updated_at,
-        jsonld_schema as seo_data
+        application_url
       FROM jobs
       WHERE is_active = 1
         AND (expires_at IS NULL OR expires_at > datetime('now'))
-      ORDER BY
-        posted_at DESC
-      LIMIT ? OFFSET ?
+      ORDER BY posted_at DESC
+      LIMIT ?
     `
 
-    const stmt = env.MEGAWE_DB.prepare(query)
-    const results = await stmt.bind(limit, offset).all()
+    const results = await env.MEGAWE_DB.prepare(query).bind(limit).all()
 
     // Transform database results to API response format
-    const jobs: Job[] = results.results.map((row: any) => ({
-
+    const jobs = results.results.map((row: any) => ({
       id: row.id,
       title: row.title,
-      slug: row.slug || row.title.toLowerCase().replace(/[^a-z0-9]+/g, '-'),
+      slug: row.title.toLowerCase().replace(/[^a-z0-9]+/g, '-'),
       description: row.description || '',
-      requirements: row.requirements ? row.requirements.split(',').map((r: string) => r.trim()) : [],
-      responsibilities: [], // No responsibilities column in database
-      benefits: [], // No benefits column in database
-      skills: row.skills ? row.skills.split(',').map((s: string) => s.trim()) : [],
-      tags: row.tags ? row.tags.split(',').map((t: string) => t.trim()) : [],
+      requirements: [], // Simplified for now
+      responsibilities: [],
+      benefits: [],
+      skills: [],
+      tags: [],
 
       // Company information
       company: row.company || '',
       companyData: {
-        id: row.employer_id || '',
+        id: '',
         name: row.company || '',
         slug: row.company ? row.company.toLowerCase().replace(/\s+/g, '-') : '',
       },
 
       // Location information
       location: row.location || '',
-      postalCode: row.postal_code,
-      latitude: row.latitude,
-      longitude: row.longitude,
-      isRemote: false, // Default value
-      isHybrid: false, // Default value
+      postalCode: null,
+      latitude: null,
+      longitude: null,
+      isRemote: false,
+      isHybrid: false,
 
       // Job details
-      employmentType: row.employment_type || 'full-time',
-      experienceLevel: row.min_year_experience ? `${row.min_year_experience}+ years` : undefined,
+      employmentType: row.type || 'full-time',
+      experienceLevel: null,
       salary: row.salary_min || row.salary_max ? {
         min: row.salary_min,
         max: row.salary_max,
-        currency: row.salary_currency || 'IDR',
-        period: row.salary_period || 'month',
+        currency: 'IDR',
+        period: 'month',
         showSalary: Boolean(row.show_salary)
       } : undefined,
       type: row.type,
       category: row.category,
-      department: undefined, // Not in database
+      department: null,
 
       // Quota information
       quota: row.quota,
       availableQuota: row.available_quota,
-      usageQuota: row.usage_quota,
+      usageQuota: null,
 
       // Dates
       postedAt: row.posted_at,
-      expiresAt: row.expires_at,
-      createdAt: row.created_at,
-      updatedAt: row.updated_at,
+      expiresAt: null,
+      createdAt: row.posted_at,
+      updatedAt: row.posted_at,
 
       // URLs
       applicationUrl: row.application_url,
     }))
 
-    // Prepare response
     const response = {
       success: true,
       data: {
         jobs,
         pagination: {
           limit,
-          offset,
-          hasMore: results.results.length === limit,
+          offset: 0,
+          hasMore: false,
         },
         filters: {
           locations: [...new Set(jobs.map(job => job.location).filter(Boolean))],
@@ -163,7 +133,7 @@ export async function onRequestGet(context: { env: Env; request: Request }) {
       meta: {
         timestamp: new Date().toISOString(),
         processingTime: Date.now() - startTime,
-        total: results.results.length,
+        total: jobs.length,
       },
     }
 
@@ -174,7 +144,7 @@ export async function onRequestGet(context: { env: Env; request: Request }) {
         'Access-Control-Allow-Origin': '*',
         'Access-Control-Allow-Methods': 'GET, OPTIONS',
         'Access-Control-Allow-Headers': 'Content-Type',
-        'Cache-Control': 'public, max-age=300', // 5 minutes
+        'Cache-Control': 'public, max-age=300',
       },
     })
 
@@ -200,9 +170,6 @@ export async function onRequestGet(context: { env: Env; request: Request }) {
   }
 }
 
-/**
- * Handle OPTIONS requests for CORS
- */
 export async function onRequestOptions() {
   return new Response(null, {
     status: 200,
