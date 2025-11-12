@@ -4,6 +4,7 @@ const nextConfig = {
   reactStrictMode: true,
 
   // Static export configuration for optimal Cloudflare Pages performance
+  // API calls will be handled by Pages Functions
   output: 'export',
   trailingSlash: true,
   distDir: 'out',
@@ -37,8 +38,9 @@ const nextConfig = {
   env: {
     NEXT_PUBLIC_APP_NAME: 'Megawe',
     NEXT_PUBLIC_APP_DESCRIPTION: 'Indonesian Job Vacancy Aggregator',
-    NEXT_PUBLIC_API_URL: 'https://megawe-worker.tekipik.workers.dev',
-    NEXT_PUBLIC_WORKER_URL: 'https://megawe-worker.tekipik.workers.dev',
+    // In production, use local Pages Functions endpoints (no base URL needed)
+    NEXT_PUBLIC_API_URL: process.env.NODE_ENV === 'production' ? '' : 'https://megawe-worker.tekipik.workers.dev',
+    NEXT_PUBLIC_WORKER_URL: process.env.NODE_ENV === 'production' ? '' : 'https://megawe-worker.tekipik.workers.dev',
     NEXT_PUBLIC_PLATFORM: 'cloudflare-pages',
   },
 

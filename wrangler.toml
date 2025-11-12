@@ -1,0 +1,32 @@
+name = "megawe-nextjs"
+compatibility_date = "2024-11-11"
+compatibility_flags = ["nodejs_compat"]
+
+# Pages Functions configuration
+pages_build_output_dir = "out"
+
+# D1 Database binding (same as megawe-worker)
+[[d1_databases]]
+binding = "MEGAWE_DB"
+database_name = "megawe-db"
+database_id = "2ab2aed8-4a5b-41be-b8e3-e3185d2ea652"
+
+# KV Namespace binding (same as megawe-worker)
+[[kv_namespaces]]
+binding = "MEGAWE_CACHE"
+id = "75dc9c6ac1b64949aaeee675590e32f5"
+
+# Environment variables
+[vars]
+NODE_ENV = "production"
+NEXT_PUBLIC_APP_NAME = "Megawe"
+NEXT_PUBLIC_APP_DESCRIPTION = "Indonesian Job Vacancy Aggregator"
+NEXT_PUBLIC_API_URL = "/api"
+NEXT_PUBLIC_WORKER_URL = "/api"
+NEXT_PUBLIC_PLATFORM = "cloudflare-pages"
+
+[env.development]
+name = "megawe-nextjs-dev"
+
+[env.production]
+name = "megawe-nextjs"
